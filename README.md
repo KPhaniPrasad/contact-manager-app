@@ -12,4 +12,4 @@ A full-stack contact management application built with:
 
 ## 📬 Contact
 
-Made with ❤️ by [Your Name] — feel free to reach out!
+Made with ❤️ by Phani Prasad — feel free to reach out!
