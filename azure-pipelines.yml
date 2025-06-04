@@ -30,7 +30,7 @@ steps:
 - script: |
     cd frontend
     npm install
-    CI=false npm run build
+    CI=false npm run build --verbose
   displayName: 'Pre-test React frontend build'
 
 # Build backend Docker image
