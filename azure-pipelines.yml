@@ -5,12 +5,13 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  acrLoginServer: mycontactmanager.azurecr.io            # Replace with your ACR login server
+  acrLoginServer: mycontactmanager.azurecr.io          # Replace with your ACR login server
   imageNameFrontend: contact-frontend
   imageNameBackend: contact-backend
 
 steps:
-# Optional: Install Docker if needed
+
+# Install Docker (optional, if not already available)
 - task: DockerInstaller@0
 
 # Login to Azure Container Registry
@@ -18,9 +19,21 @@ steps:
   displayName: Login to ACR
   inputs:
     command: login
-    containerRegistry: azure-contact-manager-app          # Replace with your Azure DevOps service connection name
+    containerRegistry: azure-contact-manager-app        # Replace with your service connection name
 
-# Build backend image
+# ✅ Pre-test frontend build outside Docker
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
+  displayName: 'Install Node.js for frontend build'
+
+- script: |
+    cd frontend
+    npm install
+    CI=false npm run build
+  displayName: 'Pre-test React frontend build'
+
+# Build backend Docker image
 - task: Docker@2
   displayName: Build backend image
   inputs:
@@ -30,7 +43,7 @@ steps:
       $(acrLoginServer)/$(imageNameBackend):$(Build.BuildId)
     buildContext: $(Build.SourcesDirectory)/backend
 
-# Build frontend image
+# Build frontend Docker image
 - task: Docker@2
   displayName: Build frontend image
   inputs:
@@ -40,7 +53,7 @@ steps:
       $(acrLoginServer)/$(imageNameFrontend):$(Build.BuildId)
     buildContext: $(Build.SourcesDirectory)/frontend
 
-# Push backend image
+# Push backend Docker image to ACR
 - task: Docker@2
   displayName: Push backend image
   inputs:
@@ -48,7 +61,7 @@ steps:
     tags: |
       $(acrLoginServer)/$(imageNameBackend):$(Build.BuildId)
 
-# Push frontend image
+# Push frontend Docker image to ACR
 - task: Docker@2
   displayName: Push frontend image
   inputs:
