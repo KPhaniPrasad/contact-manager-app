@@ -40,8 +40,8 @@ steps:
     command: build
     Dockerfile: backend/Dockerfile
     tags: |
-        build-$(Build.BuildId)
-        latest
+      build-$(Build.BuildId)
+      latest
     buildContext: $(Build.SourcesDirectory)/backend
 
 # Build frontend Docker image
