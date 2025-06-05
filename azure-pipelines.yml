@@ -61,7 +61,7 @@ steps:
     repository: mycontactmanager
     tags: |
       $(acrLoginServer)/$(imageNameBackend):$(Build.BuildId)
-    containerRegistry: $(acrLoginServer) 
+    containerRegistry: azure-contact-manager-app
 
 # Push frontend Docker image to ACR
 - task: Docker@2
@@ -71,4 +71,4 @@ steps:
     repository: mycontactmanager  
     tags: |
       $(acrLoginServer)/$(imageNameFrontend):$(Build.BuildId)
-    containerRegistry: $(acrLoginServer)   
+    containerRegistry: azure-contact-manager-app  
