@@ -1,46 +1,59 @@
----
 trigger:
   - main
+
 pool:
   vmImage: ubuntu-latest
+
 variables:
   acrLoginServer: mycontactmanager.azurecr.io
   imageNameFrontend: contact-frontend
   imageNameBackend: contact-backend
+
 steps:
   - task: DockerInstaller@0
+
   - task: Docker@2
     displayName: Login to ACR
     inputs:
       command: login
       containerRegistry: azure-contact-manager
+
   - task: NodeTool@0
     inputs:
       versionSpec: 18.x
     displayName: Install Node.js for frontend build
+
   - script: |
       cd frontend
       npm install
       CI=false npm run build --verbose
     displayName: Pre-test React frontend build
+
+  # ✅ Build backend image (correct repo + tag)
   - task: Docker@2
     displayName: Build backend image
     inputs:
       command: build
+      repository: $(acrLoginServer)/mycontactmanager
       Dockerfile: backend/Dockerfile
       tags: |
         $(imageNameBackend)-$(Build.BuildId)
         $(imageNameBackend)-latest
       buildContext: $(Build.SourcesDirectory)/backend
+
+  # ✅ Build frontend image (correct repo + tag)
   - task: Docker@2
     displayName: Build frontend image
     inputs:
       command: build
+      repository: $(acrLoginServer)/mycontactmanager
       Dockerfile: frontend/Dockerfile
       tags: |
         $(imageNameFrontend)-$(Build.BuildId)
         $(imageNameFrontend)-latest
       buildContext: $(Build.SourcesDirectory)/frontend
+
+  # ✅ Push backend image
   - task: Docker@2
     displayName: Push backend image
     inputs:
@@ -49,12 +62,15 @@ steps:
       tags: |
         $(imageNameBackend)-$(Build.BuildId)
         $(imageNameBackend)-latest
-      buildContext: $(Build.SourcesDirectory)/backend
+      containerRegistry: azure-contact-manager
+
+  # ✅ Push frontend image
   - task: Docker@2
     displayName: Push frontend image
     inputs:
       command: push
+      repository: $(acrLoginServer)/mycontactmanager
       tags: |
         $(imageNameFrontend)-$(Build.BuildId)
         $(imageNameFrontend)-latest
-      buildContext: $(Build.SourcesDirectory)/frontend
+      containerRegistry: azure-contact-manager
