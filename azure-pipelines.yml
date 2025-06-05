@@ -38,7 +38,7 @@ steps:
   displayName: Build backend image
   inputs:
     command: build
-    repository: $(acrLoginServer)/mycontactmanager
+    
     Dockerfile: backend/Dockerfile
     tags: |
       $(imageNameBackend)-$(Build.BuildId)
@@ -50,7 +50,6 @@ steps:
   displayName: Build frontend image
   inputs:
     command: build
-    repository: $(acrLoginServer)/mycontactmanager
     Dockerfile: frontend/Dockerfile
     tags: |
       $(imageNameFrontend)-$(Build.BuildId)
