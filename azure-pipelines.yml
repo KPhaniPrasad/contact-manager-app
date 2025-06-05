@@ -19,7 +19,7 @@ steps:
   displayName: Login to ACR
   inputs:
     command: login
-    containerRegistry: azure-contact-manager-app        # Replace with your service connection name
+    containerRegistry: azure-contact-manager        # Replace with your service connection name
 
 # ✅ Pre-test frontend build outside Docker
 - task: NodeTool@0
