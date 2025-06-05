@@ -40,7 +40,8 @@ steps:
     command: build
     Dockerfile: backend/Dockerfile
     tags: |
-      $(acrLoginServer)/$(imageNameBackend):$(Build.BuildId)
+        build-$(Build.BuildId)
+        latest
     buildContext: $(Build.SourcesDirectory)/backend
 
 # Build frontend Docker image
@@ -50,7 +51,8 @@ steps:
     command: build
     Dockerfile: frontend/Dockerfile
     tags: |
-      $(acrLoginServer)/$(imageNameFrontend):$(Build.BuildId)
+      build-$(Build.BuildId)
+      latest
     buildContext: $(Build.SourcesDirectory)/frontend
 
 # Push backend Docker image to ACR
@@ -60,8 +62,9 @@ steps:
     command: push
     repository: mycontactmanager
     tags: |
-      $(acrLoginServer)/$(imageNameBackend):$(Build.BuildId)
-    containerRegistry: azure-contact-manager
+       build-$(Build.BuildId)
+        latest
+    buildContext: $(Build.SourcesDirectory)/backend
 
 # Push frontend Docker image to ACR
 - task: Docker@2
@@ -70,5 +73,6 @@ steps:
     command: push
     repository: mycontactmanager  
     tags: |
-      $(acrLoginServer)/$(imageNameFrontend):$(Build.BuildId)
-    containerRegistry: azure-contact-manager
+      build-$(Build.BuildId)
+      latest
+    buildContext: $(Build.SourcesDirectory)/frontend
