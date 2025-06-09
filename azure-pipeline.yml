@@ -87,4 +87,3 @@ steps:
     inputs:
       targetPath: '$(Build.SourcesDirectory)/release-pipeline.yml'
       artifact: 'release-pipeline'
-      publishLocation: 'pipeline'
