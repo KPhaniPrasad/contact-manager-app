@@ -1,0 +1,40 @@
+trigger: none
+
+stages:
+  - stage: DeployToAKS
+    displayName: Deploy to AKS
+    dependsOn: []
+    jobs:
+      - job: Deploy
+        displayName: Deploy Kubernetes Resources
+        pool:
+          vmImage: ubuntu-latest
+
+        steps:
+          # ✅ Download build artifact 'manifests' from previous pipeline
+          - download: current
+            artifact: manifests
+
+          # ✅ Install Kubectl
+          - task: KubectlInstaller@0
+            displayName: Install kubectl
+            inputs:
+              kubectlVersion: 'latest'
+
+          # ✅ Set Kubernetes context (Azure)
+          - task: AzureCLI@2
+            displayName: Set AKS context
+            inputs:
+              azureSubscription: '<Your Azure Subscription Name>'
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                az aks get-credentials \
+                  --resource-group <YourResourceGroup> \
+                  --name <YourAKSClusterName> \
+                  --overwrite-existing
+
+          # ✅ Apply Kubernetes Manifests
+          - script: |
+              kubectl apply -f $(Pipeline.Workspace)/manifests/
+            displayName: Apply Kubernetes YAMLs

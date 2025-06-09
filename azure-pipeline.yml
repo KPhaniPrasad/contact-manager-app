@@ -74,3 +74,10 @@ steps:
         $(imageNameFrontend)-$(Build.BuildId)
         $(imageNameFrontend)-latest
       containerRegistry: azure-contact-manager
+
+  # ✅ Publish Kubernetes manifests from k8s/ folder
+  - task: PublishPipelineArtifact@1
+    displayName: Publish deployment YAMLs
+    inputs:
+      targetPath: '$(Build.SourcesDirectory)/K8s/Deployment'
+      artifactName: 'manifests'  
