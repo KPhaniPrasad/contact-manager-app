@@ -80,4 +80,11 @@ steps:
     displayName: Publish deployment YAMLs
     inputs:
       targetPath: '$(Build.SourcesDirectory)/K8s/Deployment'
-      artifactName: 'manifests'  
+      artifactName: 'manifests'
+ # ✅ Publish release-pipeline from root directory 
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish release-pipeline.yml'
+    inputs:
+      targetPath: '$(Build.SourcesDirectory)/release-pipeline.yml'
+      artifact: 'release-pipeline'
+      publishLocation: 'pipeline'
