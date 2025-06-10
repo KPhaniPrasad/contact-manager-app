@@ -33,6 +33,15 @@ steps:
   - task: Docker@2
     displayName: Build backend image
     inputs:
+  - task: Docker@2
+    displayName: Push backend image to ACR
+    inputs:
+      command: push
+      repository: $(acrLoginServer)/mycontactmanager
+      tags: |
+        $(imageNameBackend)-$(Build.BuildId)
+        $(imageNameBackend)-latest
+
       command: build
       repository: $(acrLoginServer)/mycontactmanager
       Dockerfile: backend/Dockerfile
@@ -87,3 +96,21 @@ steps:
     inputs:
       targetPath: '$(Build.SourcesDirectory)/release-pipeline.yml'
       artifact: 'release-pipeline'
+
+  - task: Docker@2
+    displayName: Build frontend image
+    inputs:
+      command: build
+      repository: $(acrLoginServer)/mycontactmanager
+      Dockerfile: frontend/Dockerfile
+      tags: |
+        $(imageNameFrontend)-latest
+      buildContext: $(Build.SourcesDirectory)/frontend
+
+  - task: Docker@2
+    displayName: Push frontend image to ACR
+    inputs:
+      command: push
+      repository: $(acrLoginServer)/mycontactmanager
+      tags: |
+        $(imageNameFrontend)-latest
