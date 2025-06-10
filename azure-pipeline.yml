@@ -8,6 +8,8 @@ variables:
   acrLoginServer: mycontactmanager.azurecr.io
   imageNameFrontend: contact-frontend
   imageNameBackend: contact-backend
+  aksClusterName: contactapp
+  aksResourceGroup: dev
 
 steps:
   - task: DockerInstaller@0
@@ -17,6 +19,18 @@ steps:
     inputs:
       command: login
       containerRegistry: azure-contact-manager
+
+  - task: AzureCLI@2
+    displayName: Attach ACR to AKS
+    inputs:
+      azureSubscription: '<your-service-connection-name>'
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        az aks update \
+          --name $(aksClusterName) \
+          --resource-group $(aksResourceGroup) \
+          --attach-acr mycontactmanager
 
   - task: NodeTool@0
     displayName: Install Node.js for frontend build
@@ -76,9 +90,3 @@ steps:
     inputs:
       targetPath: '$(Build.SourcesDirectory)/K8s/Deployment'
       artifactName: 'manifests'
-
-  - task: PublishPipelineArtifact@1
-    displayName: Publish release-pipeline.yml
-    inputs:
-      targetPath: '$(Build.SourcesDirectory)/release-pipeline.yml'
-      artifact: 'release-pipeline'
