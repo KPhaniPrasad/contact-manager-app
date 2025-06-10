@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: contact-backend
-          image: mycontactmanager.azurecr.io/mycontactmanager:contact-backend-latest
+          image: mycontactmanager.azurecr.io/mycontactmanager/mycontactmanager:contact-backend-latest
           imagePullPolicy: Always
           ports:
             - containerPort: 4000
