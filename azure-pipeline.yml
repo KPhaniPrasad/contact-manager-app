@@ -20,18 +20,6 @@ steps:
       command: login
       containerRegistry: azure-contact-manager
 
-  - task: AzureCLI@2
-    displayName: Attach ACR to AKS
-    inputs:
-      azureSubscription: Azure subscrption 1
-      scriptType: bash
-      scriptLocation: inlineScript
-      inlineScript: |
-        az aks update \
-          --name $(aksClusterName) \
-          --resource-group $(aksResourceGroup) \
-          --attach-acr mycontactmanager
-
   - task: NodeTool@0
     displayName: Install Node.js for frontend build
     inputs:
