@@ -15,6 +15,7 @@ spec:
       containers:
         - name: contact-frontend
           image: mycontactmanager.azurecr.io/mycontactmanager:contact-frontend-latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
 
