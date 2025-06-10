@@ -35,7 +35,7 @@ steps:
     displayName: Build backend image
     inputs:
       command: build
-      repository: $(acrLoginServer)/mycontactmanager
+      repository: mycontactmanager/mycontactmanager
       Dockerfile: backend/Dockerfile
       tags: |
         $(imageNameBackend)-$(Build.BuildId)
@@ -46,7 +46,7 @@ steps:
     displayName: Push backend image to ACR
     inputs:
       command: push
-      repository: $(acrLoginServer)/mycontactmanager
+      repository: mycontactmanager/mycontactmanager
       tags: |
         $(imageNameBackend)-$(Build.BuildId)
         $(imageNameBackend)-latest
@@ -56,7 +56,7 @@ steps:
     displayName: Build frontend image
     inputs:
       command: build
-      repository: $(acrLoginServer)/mycontactmanager
+      repository: mycontactmanager/mycontactmanager
       Dockerfile: frontend/Dockerfile
       tags: |
         $(imageNameFrontend)-$(Build.BuildId)
@@ -67,7 +67,7 @@ steps:
     displayName: Push frontend image
     inputs:
       command: push
-      repository: $(acrLoginServer)/mycontactmanager
+      repository: mycontactmanager/mycontactmanager
       tags: |
         $(imageNameFrontend)-$(Build.BuildId)
         $(imageNameFrontend)-latest
