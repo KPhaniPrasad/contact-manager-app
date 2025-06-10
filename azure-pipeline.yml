@@ -15,102 +15,70 @@ steps:
   - task: Docker@2
     displayName: Login to ACR
     inputs:
-    command: login
-    containerRegistry: azure-contact-manager
+      command: login
+      containerRegistry: azure-contact-manager
 
   - task: NodeTool@0
-    inputs:
-    versionSpec: 18.x
     displayName: Install Node.js for frontend build
+    inputs:
+      versionSpec: 18.x
 
-    - script: |
-    cd frontend
-    npm install
-    CI=false npm run build --verbose
+  - script: |
+      cd frontend
+      npm install
+      CI=false npm run build --verbose
     displayName: Pre-test React frontend build
 
-    # ✅ Build backend image (correct repo + tag)
   - task: Docker@2
     displayName: Build backend image
     inputs:
+      command: build
+      repository: $(acrLoginServer)/mycontactmanager
+      Dockerfile: backend/Dockerfile
+      tags: |
+        $(imageNameBackend)-$(Build.BuildId)
+        $(imageNameBackend)-latest
+      buildContext: $(Build.SourcesDirectory)/backend
+
   - task: Docker@2
     displayName: Push backend image to ACR
     inputs:
-    command: push
-    repository: $(acrLoginServer)/mycontactmanager
-    tags: |
-    $(imageNameBackend)-$(Build.BuildId)
-    $(imageNameBackend)-latest
+      command: push
+      repository: $(acrLoginServer)/mycontactmanager
+      tags: |
+        $(imageNameBackend)-$(Build.BuildId)
+        $(imageNameBackend)-latest
+      containerRegistry: azure-contact-manager
 
-    command: build
-    repository: $(acrLoginServer)/mycontactmanager
-    Dockerfile: backend/Dockerfile
-    tags: |
-    $(imageNameBackend)-$(Build.BuildId)
-    $(imageNameBackend)-latest
-    buildContext: $(Build.SourcesDirectory)/backend
-
-    # ✅ Build frontend image (correct repo + tag)
   - task: Docker@2
     displayName: Build frontend image
     inputs:
-    command: build
-    repository: $(acrLoginServer)/mycontactmanager
-    Dockerfile: frontend/Dockerfile
-    tags: |
-    $(imageNameFrontend)-$(Build.BuildId)
-    $(imageNameFrontend)-latest
-    buildContext: $(Build.SourcesDirectory)/frontend
+      command: build
+      repository: $(acrLoginServer)/mycontactmanager
+      Dockerfile: frontend/Dockerfile
+      tags: |
+        $(imageNameFrontend)-$(Build.BuildId)
+        $(imageNameFrontend)-latest
+      buildContext: $(Build.SourcesDirectory)/frontend
 
-    # ✅ Push backend image
-  - task: Docker@2
-    displayName: Push backend image
-    inputs:
-    command: push
-    repository: $(acrLoginServer)/mycontactmanager
-    tags: |
-    $(imageNameBackend)-$(Build.BuildId)
-    $(imageNameBackend)-latest
-    containerRegistry: azure-contact-manager
-
-    # ✅ Push frontend image
   - task: Docker@2
     displayName: Push frontend image
     inputs:
-    command: push
-    repository: $(acrLoginServer)/mycontactmanager
-    tags: |
-    $(imageNameFrontend)-$(Build.BuildId)
-    $(imageNameFrontend)-latest
-    containerRegistry: azure-contact-manager
+      command: push
+      repository: $(acrLoginServer)/mycontactmanager
+      tags: |
+        $(imageNameFrontend)-$(Build.BuildId)
+        $(imageNameFrontend)-latest
+      containerRegistry: azure-contact-manager
 
-    # ✅ Publish Kubernetes manifests from k8s/ folder
   - task: PublishPipelineArtifact@1
     displayName: Publish deployment YAMLs
     inputs:
-    targetPath: '$(Build.SourcesDirectory)/K8s/Deployment'
-    artifactName: 'manifests'
-    # ✅ Publish release-pipeline from root directory 
+      targetPath: '$(Build.SourcesDirectory)/K8s/Deployment'
+      artifactName: 'manifests'
+
   - task: PublishPipelineArtifact@1
-    displayName: 'Publish release-pipeline.yml'
+    displayName: Publish release-pipeline.yml
     inputs:
-    targetPath: '$(Build.SourcesDirectory)/release-pipeline.yml'
-    artifact: 'release-pipeline'
-
-  - task: Docker@2
-    displayName: Build frontend image
-    inputs:
-    command: build
-    repository: $(acrLoginServer)/mycontactmanager
-    Dockerfile: frontend/Dockerfile
-    tags: |
-    $(imageNameFrontend)-latest
-    buildContext: $(Build.SourcesDirectory)/frontend
-
-  - task: Docker@2
-    displayName: Push frontend image to ACR
-    inputs:
-    command: push
-    repository: $(acrLoginServer)/mycontactmanager
-    tags: |
-    $(imageNameFrontend)-latest
+      targetPath: '$(Build.SourcesDirectory)/release-pipeline.yml'
+      artifact: 'release-pipeline'
