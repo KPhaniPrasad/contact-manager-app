@@ -5,8 +5,8 @@ stages:
     displayName: Deploy to AKS
     dependsOn: []
     jobs:
-      - job: Deploy
-        displayName: Deploy Kubernetes Resources
+      - job: DownloadAndApply
+        displayName: Download and Apply release-pipeline.yml
         pool:
           vmImage: ubuntu-latest
 
@@ -14,6 +14,8 @@ stages:
           # ✅ Download build artifact 'manifests' from previous pipeline
           - download: current
             artifact: manifests
+          - download: current
+            artifact: release-pipeline    
 
           # ✅ Install Kubectl
           - task: KubectlInstaller@0
@@ -25,13 +27,13 @@ stages:
           - task: AzureCLI@2
             displayName: Set AKS context
             inputs:
-              azureSubscription: '<Your Azure Subscription Name>'
+              azureSubscription: 'Azure subscription 1'
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
                 az aks get-credentials \
-                  --resource-group <YourResourceGroup> \
-                  --name <YourAKSClusterName> \
+                  --resource-group dev \
+                  --name contactapp \
                   --overwrite-existing
 
           # ✅ Apply Kubernetes Manifests
